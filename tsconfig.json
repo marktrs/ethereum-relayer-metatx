@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "es2018",
+    "module": "commonjs",
+    "strict": true,
+    "esModuleInterop": true,
+    "outDir": "dist"
+  },
+  "exclude": ["dist", "node_modules"],
+  "include": [
+    "./tasks",
+    "./scripts",
+    "./test",
+    "./src",
+    "./node_modules/types-ethereumjs-util/index.d.ts"
+  ],
+  "files": ["./hardhat.config.ts"]
+}
