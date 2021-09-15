@@ -356,15 +356,12 @@ export class Dapp extends React.Component {
       const request = await signMetaTxRequest(signer.provider, forwarder, { to, from, data });
       const url = "http://localhost:3001/forward-transaction";
 
-      const response = await fetch(url, {
+      fetch(url, {
         method: 'POST',
         body: JSON.stringify(request),
         headers: { 'Content-Type': 'application/json' },
       });
 
-      const { txHash } = await response.json()
-
-      this.setState({ txBeingSent: txHash });
 
       await this._updateBalance();
     } catch (error) {

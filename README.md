@@ -60,7 +60,7 @@ need to have [Metamask](https://metamask.io) installed and listening to
 
 
 - ` Received invalid block tag X. Latest block number is Y` errors: if you are seeing this error on the `npx hardhat node`
-  console, try re-select your Metamask network to localhost. 
+  console, try re-select your Metamask network to localhost then reload the page and connect again.
 
 - `Invalid nonce` errors: if you are seeing this error on the `npx hardhat node`
   console, try resetting your Metamask account. This will reset the account's
