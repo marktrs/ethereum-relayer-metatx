@@ -3,7 +3,6 @@
 This repository is forked from [Hardhat Hackathon Boilerplate](https://github.com/nomiclabs/hardhat-hackathon-boilerplate).
 
 
-
 ## Quick start
 
 The first things you need to do are cloning this repository and installing its
@@ -18,6 +17,25 @@ Once installed, let's run Hardhat's testing network:
 ```sh
 yarn hardhat node
 ```
+
+Before go to next step please provide following environment variable
+
+```sh
+// backend/.env
+
+APP_PORT=3001
+APP_GAS_LIMIT=2500000
+APP_PAYMASTER_KEY="<your paymaster private key that has enough ETH to pay for gas fee>"
+JOB_SCHEDULE="* * * * * *"
+```
+
+```sh
+// frontend/.env
+
+SKIP_PREFLIGHT_CHECK=true
+REACT_APP_RELAYER_URL=http://localhost:3001
+```
+
 
 Then, on a new terminal, go to the repository's root folder and run this to
 deploy your contract:
