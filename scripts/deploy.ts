@@ -39,35 +39,40 @@ async function main() {
 
 function saveFrontendFiles(token: any, forwarder: any) {
   const fs = require("fs");
-  const contractsDir = __dirname + "/../frontend/src/contracts";
+  const directories = [
+    __dirname + "/../frontend/src/contracts",
+    __dirname + "/../backend/contracts",
+  ];
 
-  if (!fs.existsSync(contractsDir)) {
-    fs.mkdirSync(contractsDir);
-  }
+  directories.forEach((contractsDir) => {
+    if (!fs.existsSync(contractsDir)) {
+      fs.mkdirSync(contractsDir);
+    }
 
-  fs.writeFileSync(
-    contractsDir + "/contract-address.json",
-    JSON.stringify(
-      {
-        Token: token.address,
-        Forwarder: forwarder.address,
-      },
-      undefined,
-      2
-    )
-  );
+    fs.writeFileSync(
+      contractsDir + "/contract-address.json",
+      JSON.stringify(
+        {
+          Token: token.address,
+          Forwarder: forwarder.address,
+        },
+        undefined,
+        2
+      )
+    );
 
-  const TokenArtifact = artifacts.readArtifactSync("TargetToken");
-  fs.writeFileSync(
-    contractsDir + "/TargetToken.json",
-    JSON.stringify(TokenArtifact, null, 2)
-  );
+    const TokenArtifact = artifacts.readArtifactSync("TargetToken");
+    fs.writeFileSync(
+      contractsDir + "/TargetToken.json",
+      JSON.stringify(TokenArtifact, null, 2)
+    );
 
-  const ForwarderArtifact = artifacts.readArtifactSync("MinimalForwarder");
-  fs.writeFileSync(
-    contractsDir + "/MinimalForwarder.json",
-    JSON.stringify(ForwarderArtifact, null, 2)
-  );
+    const ForwarderArtifact = artifacts.readArtifactSync("MinimalForwarder");
+    fs.writeFileSync(
+      contractsDir + "/MinimalForwarder.json",
+      JSON.stringify(ForwarderArtifact, null, 2)
+    );
+  });
 }
 
 main()

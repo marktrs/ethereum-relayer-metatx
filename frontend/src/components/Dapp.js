@@ -1,5 +1,6 @@
 import React from "react";
-
+import dotenv from "dotenv";
+import { resolve } from "path";
 // We'll use ethers to interact with the Ethereum network and our contract
 import { ethers } from "ethers";
 import { signMetaTxRequest } from '../eth/signer';
@@ -19,6 +20,10 @@ import { Transfer } from "./Transfer";
 import { TransactionErrorMessage } from "./TransactionErrorMessage";
 import { WaitingForTransactionMessage } from "./WaitingForTransactionMessage";
 import { NoTokensMessage } from "./NoTokensMessage";
+
+dotenv.config({
+  path: resolve(process.cwd(), ".env"),
+});
 
 // This is the Hardhat Network id, you might change it in the hardhat.config.js
 // Here's a list of network ids https://docs.metamask.io/guide/ethereum-provider.html#properties
@@ -349,19 +354,19 @@ export class Dapp extends React.Component {
       const data = this._token.interface.encodeFunctionData('transfer', [receiver, amount]);
       const to = this._token.address;
       const request = await signMetaTxRequest(signer.provider, forwarder, { to, from, data });
+      const url = "http://localhost:3001/forward-transaction";
 
-      console.log(request);
+      const response = await fetch(url, {
+        method: 'POST',
+        body: JSON.stringify(request),
+        headers: { 'Content-Type': 'application/json' },
+      });
 
-      //   const tx = await this._token.transfer(to, amount);
+      const { txHash } = await response.json()
 
-      // this.setState({ txBeingSent: tx.hash });
+      this.setState({ txBeingSent: txHash });
 
-      //   const receipt = await tx.wait();
-      //   if (receipt.status === 0) {
-      //     throw new Error("Transaction failed");
-      //   }
-
-      //   await this._updateBalance();
+      await this._updateBalance();
     } catch (error) {
       if (error.code === ERROR_CODE_TX_REJECTED_BY_USER) {
         return;

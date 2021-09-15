@@ -3,7 +3,7 @@ import React from "react";
 export function Transfer({ transferTokens, tokenSymbol }) {
   return (
     <div>
-      <h4>Transfer directly without meta-tx</h4>
+      <h4>Transfer TGT tokens with meta-tx</h4>
       <form
         onSubmit={(event) => {
           // This function just calls the transferTokens callback with the
