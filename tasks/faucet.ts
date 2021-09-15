@@ -1,12 +1,13 @@
 import fs from "fs";
-import { ethers, network } from "hardhat";
 import { task } from "hardhat/config";
-// This file is only here to make interacting with the Dapp easier,
-// feel free to ignore it if you don't need it.
+import { HardhatRuntimeEnvironment, TaskArguments } from "hardhat/types";
 
-task("faucet", "Sends ETH and tokens to an address")
-  .addPositionalParam("receiver", "The address that will receive them")
-  .setAction(async ({ receiver }) => {
+task(
+  "faucet",
+  "Sends ETH and TGT tokens to an address",
+  async (args: TaskArguments, hre: HardhatRuntimeEnvironment) => {
+    const { ethers, network } = hre;
+    const { receiver } = args;
     if (network.name === "hardhat") {
       console.warn(
         "You are running the faucet task with Hardhat network, which" +
@@ -44,4 +45,5 @@ task("faucet", "Sends ETH and tokens to an address")
     await tx2.wait();
 
     console.log(`Transferred 1 ETH and 100 TGT to ${receiver}`);
-  });
+  }
+).addPositionalParam("receiver", "The address that will receive them");

@@ -25,7 +25,7 @@ async function main() {
   const forwarder = await Forwarder.deploy();
 
   const Token = await ethers.getContractFactory("TargetToken");
-  const token = await Token.deploy(100, forwarder.address);
+  const token = await Token.deploy(1000, forwarder.address);
   await token.deployed();
 
   console.log("Target Token address:", token.address);
