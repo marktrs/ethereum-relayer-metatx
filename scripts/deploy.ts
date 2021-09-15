@@ -23,6 +23,9 @@ async function main() {
 
   const Forwarder = await ethers.getContractFactory("MinimalForwarder");
   const forwarder = await Forwarder.deploy();
+  await forwarder.deployed();
+
+  console.log("MinimalForwarder address:", forwarder.address);
 
   const Token = await ethers.getContractFactory("TargetToken");
   const token = await Token.deploy(1000, forwarder.address);
@@ -31,10 +34,10 @@ async function main() {
   console.log("Target Token address:", token.address);
 
   // We also save the contract's artifacts and address in the frontend directory
-  saveFrontendFiles(token);
+  saveFrontendFiles(token, forwarder);
 }
 
-function saveFrontendFiles(token: any) {
+function saveFrontendFiles(token: any, forwarder: any) {
   const fs = require("fs");
   const contractsDir = __dirname + "/../frontend/src/contracts";
 
@@ -44,14 +47,26 @@ function saveFrontendFiles(token: any) {
 
   fs.writeFileSync(
     contractsDir + "/contract-address.json",
-    JSON.stringify({ Token: token.address }, undefined, 2)
+    JSON.stringify(
+      {
+        Token: token.address,
+        Forwarder: forwarder.address,
+      },
+      undefined,
+      2
+    )
   );
 
   const TokenArtifact = artifacts.readArtifactSync("TargetToken");
-
   fs.writeFileSync(
     contractsDir + "/TargetToken.json",
     JSON.stringify(TokenArtifact, null, 2)
+  );
+
+  const ForwarderArtifact = artifacts.readArtifactSync("MinimalForwarder");
+  fs.writeFileSync(
+    contractsDir + "/MinimalForwarder.json",
+    JSON.stringify(ForwarderArtifact, null, 2)
   );
 }
 

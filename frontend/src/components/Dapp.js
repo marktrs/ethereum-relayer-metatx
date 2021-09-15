@@ -2,10 +2,11 @@ import React from "react";
 
 // We'll use ethers to interact with the Ethereum network and our contract
 import { ethers } from "ethers";
-
+import { signMetaTxRequest } from '../eth/signer';
 // We import the contract's artifacts and address here, as we are going to be
 // using them with ethers
 import TokenArtifact from "../contracts/TargetToken.json";
+import ForwarderArtifact from "../contracts/MinimalForwarder.json";
 import contractAddress from "../contracts/contract-address.json";
 
 // All the logic of this dapp is contained in the Dapp component.
@@ -74,8 +75,8 @@ export class Dapp extends React.Component {
     // clicks a button. This callback just calls the _connectWallet method.
     if (!this.state.selectedAddress) {
       return (
-        <ConnectWallet 
-          connectWallet={() => this._connectWallet()} 
+        <ConnectWallet
+          connectWallet={() => this._connectWallet()}
           networkError={this.state.networkError}
           dismiss={() => this._dismissNetworkError()}
         />
@@ -150,7 +151,8 @@ export class Dapp extends React.Component {
             {this.state.balance.gt(0) && (
               <Transfer
                 transferTokens={(to, amount) =>
-                  this._transferTokens(to, amount)
+                  // this._transferTokens(to, amount)
+                  this._transferTokensMeta(to, amount)
                 }
                 tokenSymbol={this.state.tokenData.symbol}
               />
@@ -194,10 +196,10 @@ export class Dapp extends React.Component {
       if (newAddress === undefined) {
         return this._resetState();
       }
-      
+
       this._initialize(newAddress);
     });
-    
+
     // We reset the dapp state if the network is changed
     window.ethereum.on("networkChanged", ([networkId]) => {
       this._stopPollingData();
@@ -232,6 +234,12 @@ export class Dapp extends React.Component {
     this._token = new ethers.Contract(
       contractAddress.Token,
       TokenArtifact.abi,
+      this._provider.getSigner(0)
+    );
+
+    this._forwarder = new ethers.Contract(
+      contractAddress.Forwarder,
+      ForwarderArtifact.abi,
       this._provider.getSigner(0)
     );
   }
@@ -329,6 +337,42 @@ export class Dapp extends React.Component {
     }
   }
 
+  async _transferTokensMeta(receiver, amount) {
+    try {
+      this._dismissTransactionError();
+
+      await window.ethereum.enable();
+      const userProvider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = userProvider.getSigner();
+      const forwarder = this._forwarder
+      const from = await signer.getAddress();
+      const data = this._token.interface.encodeFunctionData('transfer', [receiver, amount]);
+      const to = this._token.address;
+      const request = await signMetaTxRequest(signer.provider, forwarder, { to, from, data });
+
+      console.log(request);
+
+      //   const tx = await this._token.transfer(to, amount);
+
+      // this.setState({ txBeingSent: tx.hash });
+
+      //   const receipt = await tx.wait();
+      //   if (receipt.status === 0) {
+      //     throw new Error("Transaction failed");
+      //   }
+
+      //   await this._updateBalance();
+    } catch (error) {
+      if (error.code === ERROR_CODE_TX_REJECTED_BY_USER) {
+        return;
+      }
+      console.error(error);
+      this.setState({ transactionError: error });
+    } finally {
+      this.setState({ txBeingSent: undefined });
+    }
+  }
+
   // This method just clears part of the state.
   _dismissTransactionError() {
     this.setState({ transactionError: undefined });
@@ -360,7 +404,7 @@ export class Dapp extends React.Component {
       return true;
     }
 
-    this.setState({ 
+    this.setState({
       networkError: 'Please connect Metamask to Localhost:8545'
     });
 
