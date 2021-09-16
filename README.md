@@ -1,4 +1,4 @@
-# Batch relayer with meta transaction example
+# Batch relayer with meta transaction
 
 This repository is forked from [Hardhat Hackathon Boilerplate](https://github.com/nomiclabs/hardhat-hackathon-boilerplate).
 
